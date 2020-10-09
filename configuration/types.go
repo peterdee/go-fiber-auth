@@ -6,4 +6,5 @@ type ResponseMessagesStruct struct {
 	MissingData         string
 	NotFound            string
 	Ok                  string
+	TooManyRequests     string
 }

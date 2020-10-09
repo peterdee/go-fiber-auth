@@ -7,4 +7,5 @@ var ResponseMessages = ResponseMessagesStruct{
 	MissingData:         "MISSING_DATA",
 	NotFound:            "NOT_FOUND",
 	Ok:                  "OK",
+	TooManyRequests:     "TOO_MANY_REQUESTS",
 }

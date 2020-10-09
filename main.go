@@ -3,16 +3,20 @@ package main
 import (
 	"log"
 	"os"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/compress"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/favicon"
+	"github.com/gofiber/fiber/v2/middleware/limiter"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/helmet/v2"
 	"github.com/joho/godotenv"
 
 	"go-fiber-auth/apis/index"
+	"go-fiber-auth/configuration"
+	"go-fiber-auth/utilities"
 )
 
 func main() {
@@ -42,6 +46,17 @@ func main() {
 		File: "./assets/favicon.ico",
 	}))
 	app.Use(helmet.New())
+	app.Use(limiter.New(limiter.Config{
+		Max:      60,
+		Duration: 60 * time.Second,
+		LimitReached: func(ctx *fiber.Ctx) error {
+			return utilities.Response(utilities.ResponseParams{
+				Ctx:    ctx,
+				Info:   configuration.ResponseMessages.TooManyRequests,
+				Status: fiber.StatusTooManyRequests,
+			})
+		},
+	}))
 	app.Use(logger.New())
 
 	// available APIs
@@ -49,13 +64,13 @@ func main() {
 	app.Get("/api", index.GetIndex)
 
 	// handle 404
-	// app.Use(func(ctx *fiber.Ctx) error {
-	// 	return utilities.Response(utilities.ResponseParams{
-	// 		Ctx:    ctx,
-	// 		Info:   configuration.ResponseMessages.NotFound,
-	// 		Status: fiber.StatusNotFound,
-	// 	})
-	// })
+	app.Use(func(ctx *fiber.Ctx) error {
+		return utilities.Response(utilities.ResponseParams{
+			Ctx:    ctx,
+			Info:   configuration.ResponseMessages.NotFound,
+			Status: fiber.StatusNotFound,
+		})
+	})
 
 	// get the port
 	port := os.Getenv("PORT")
