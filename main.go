@@ -16,6 +16,7 @@ import (
 
 	"go-fiber-auth/apis/index"
 	"go-fiber-auth/configuration"
+	"go-fiber-auth/database"
 	"go-fiber-auth/utilities"
 )
 
@@ -31,11 +32,11 @@ func main() {
 	}
 
 	// connect to the database
-	// dbError := database.Connect()
-	// if dbError != nil {
-	// 	log.Fatal(dbError)
-	// 	return
-	// }
+	dbError := database.Connect()
+	if dbError != nil {
+		log.Fatal(dbError)
+		return
+	}
 
 	app := fiber.New()
 
