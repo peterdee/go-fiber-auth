@@ -2,6 +2,8 @@ package utilities
 
 import (
 	"github.com/gofiber/fiber/v2"
+
+	"go-fiber-auth/configuration"
 )
 
 // Send a response
@@ -10,10 +12,10 @@ func Response(params ResponseParams) error {
 	info := params.Info
 	status := params.Status
 	if info == "" {
-		info = "OK"
+		info = configuration.ResponseMessages.Ok
 	}
 	if status == 0 {
-		status = 200
+		status = fiber.StatusOK
 	}
 
 	// caclulate request latency
