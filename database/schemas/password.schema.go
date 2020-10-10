@@ -1,4 +1,4 @@
-package models
+package schemas
 
 // Password schema structure
 type Password struct {

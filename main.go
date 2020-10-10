@@ -14,6 +14,7 @@ import (
 	"github.com/gofiber/helmet/v2"
 	"github.com/joho/godotenv"
 
+	"go-fiber-auth/apis/auth"
 	"go-fiber-auth/apis/index"
 	"go-fiber-auth/configuration"
 	"go-fiber-auth/database"
@@ -63,6 +64,7 @@ func main() {
 	// available APIs
 	app.Get("/", index.GetIndex)
 	app.Get("/api", index.GetIndex)
+	app.Post("/api/auth/signup", auth.SignUp)
 
 	// handle 404
 	app.Use(func(ctx *fiber.Ctx) error {

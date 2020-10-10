@@ -7,9 +7,9 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 
 	"go-fiber-auth/configuration"
+	. "go-fiber-auth/database"
+	. "go-fiber-auth/database/schemas"
 	"go-fiber-auth/utilities"
-	. "go-fiber-todo/database"
-	. "go-fiber-todo/database/schemas"
 )
 
 // Handle signing up
@@ -17,7 +17,7 @@ func SignUp(ctx *fiber.Ctx) error {
 	// check data
 	var body CreateUserRequest
 	bodyParsingError := ctx.BodyParser(&body)
-	if parsingError != nil {
+	if bodyParsingError != nil {
 		return utilities.Response(utilities.ResponseParams{
 			Ctx:    ctx,
 			Info:   configuration.ResponseMessages.InternalServerError,
@@ -25,8 +25,10 @@ func SignUp(ctx *fiber.Ctx) error {
 		})
 	}
 	email := body.Email
+	name := body.Name
 	password := body.Password
-	if email == "" || password == "" {
+	role := body.Role
+	if email == "" || name == "" || password == "" || role == "" {
 		return utilities.Response(utilities.ResponseParams{
 			Ctx:    ctx,
 			Info:   configuration.ResponseMessages.MissingData,
@@ -34,8 +36,11 @@ func SignUp(ctx *fiber.Ctx) error {
 		})
 	}
 	trimmedEmail := strings.TrimSpace(email)
+	trimmedName := strings.TrimSpace(name)
 	trimmedPassword := strings.TrimSpace(password)
-	if trimmedEmail == "" || trimmedPassword == "" {
+	trimmedRole := strings.TrimSpace(role)
+	if trimmedEmail == "" || trimmedName == "" ||
+		trimmedPassword == "" || trimmedRole == "" {
 		return utilities.Response(utilities.ResponseParams{
 			Ctx:    ctx,
 			Info:   configuration.ResponseMessages.MissingData,
@@ -44,24 +49,81 @@ func SignUp(ctx *fiber.Ctx) error {
 	}
 
 	// load User schema
-	User := Instance.Database.Collection("User")
+	UserCollection := Instance.Database.Collection("User")
 
 	// check if email is already in use
-	filter := bson.D{{Key: "email", Value: trimmedEmail}}
-	existingRecord := User.FindOne(ctx.Context(), filter)
-	existingUser := &Todo{}
-	createdRecord.Decode(createdTodo)
+	existingRecord := UserCollection.FindOne(
+		ctx.Context(),
+		bson.D{{Key: "email", Value: trimmedEmail}},
+	)
+	existingUser := &User{}
+	existingRecord.Decode(existingUser)
+	if existingUser.ID != "" {
+		return utilities.Response(utilities.ResponseParams{
+			Ctx:    ctx,
+			Info:   configuration.ResponseMessages.EmailAlreadyInUse,
+			Status: fiber.StatusBadRequest,
+		})
+	}
 
-	// load Password schema
-	Password := Instance.Database.Collection("Password")
-
-	// create a new User record
-	todo := new(Todo)
-	if errorParsing := ctx.BodyParser(todo); errorParsing != nil {
+	// create a new User record, insert it and get back the ID
+	now := utilities.MakeTimestamp()
+	NewUser := new(User)
+	NewUser.Created = now
+	NewUser.Email = trimmedEmail
+	NewUser.ID = ""
+	NewUser.Name = trimmedName
+	NewUser.Role = trimmedRole
+	NewUser.Updated = now
+	insertionResult, insertionError := UserCollection.InsertOne(ctx.Context(), NewUser)
+	if insertionError != nil {
 		return utilities.Response(utilities.ResponseParams{
 			Ctx:    ctx,
 			Info:   configuration.ResponseMessages.InternalServerError,
 			Status: fiber.StatusInternalServerError,
 		})
 	}
+
+	createdRecord := UserCollection.FindOne(
+		ctx.Context(),
+		bson.D{{Key: "_id", Value: insertionResult.InsertedID}},
+	)
+	createdUser := &User{}
+	createdRecord.Decode(createdUser)
+
+	// load Password schema
+	PasswordCollection := Instance.Database.Collection("Password")
+
+	// create password hash
+	hash, hashError := utilities.MakeHash(trimmedPassword)
+	if hashError != nil {
+		return utilities.Response(utilities.ResponseParams{
+			Ctx:    ctx,
+			Info:   configuration.ResponseMessages.InternalServerError,
+			Status: fiber.StatusInternalServerError,
+		})
+	}
+
+	// create a new Password record and insert it
+	NewPassword := new(Password)
+	NewPassword.Created = now
+	NewPassword.Hash = hash
+	NewPassword.ID = ""
+	NewPassword.Updated = now
+	NewPassword.UserId = createdUser.ID
+	_, insertionError = PasswordCollection.InsertOne(ctx.Context(), NewPassword)
+	if insertionError != nil {
+		return utilities.Response(utilities.ResponseParams{
+			Ctx:    ctx,
+			Info:   configuration.ResponseMessages.InternalServerError,
+			Status: fiber.StatusInternalServerError,
+		})
+	}
+
+	return utilities.Response(utilities.ResponseParams{
+		Ctx: ctx,
+		Data: fiber.Map{
+			"user": createdUser,
+		},
+	})
 }
