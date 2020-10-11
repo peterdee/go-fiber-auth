@@ -48,6 +48,16 @@ func SignUp(ctx *fiber.Ctx) error {
 		})
 	}
 
+	// make sure that the role is correct
+	roles := utilities.Values(configuration.Roles)
+	if !utilities.IncludesString(roles, trimmedRole) {
+		return utilities.Response(utilities.ResponseParams{
+			Ctx:    ctx,
+			Info:   configuration.ResponseMessages.InvalidData,
+			Status: fiber.StatusBadRequest,
+		})
+	}
+
 	// load User schema
 	UserCollection := Instance.Database.Collection("User")
 
