@@ -18,7 +18,13 @@ func IncludesString(array []string, value string) bool {
 // Object.values()
 func Values(object interface{}) []string {
 	var list []string
-	elements := reflect.ValueOf(&object).Elem()
+	elements := reflect.ValueOf(object)
+
+	// if its a pointer, resolve its value
+	if elements.Kind() == reflect.Ptr {
+		elements = reflect.Indirect(elements)
+	}
+
 	for i := 0; i < elements.NumField(); i++ {
 		list = append(list, fmt.Sprintf("%v", elements.Field(i).Interface()))
 	}
