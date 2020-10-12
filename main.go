@@ -62,9 +62,8 @@ func main() {
 	app.Use(logger.New())
 
 	// available APIs
-	app.Get("/", index.GetIndex)
-	app.Get("/api", index.GetIndex)
-	app.Post("/api/auth/signup", auth.SignUp)
+	index.Setup(app)
+	auth.Setup(app)
 
 	// handle 404
 	app.Use(func(ctx *fiber.Ctx) error {

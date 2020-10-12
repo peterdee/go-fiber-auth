@@ -13,7 +13,7 @@ import (
 )
 
 // Handle signing up
-func SignUp(ctx *fiber.Ctx) error {
+func signUp(ctx *fiber.Ctx) error {
 	// check data
 	var body CreateUserRequest
 	bodyParsingError := ctx.BodyParser(&body)
@@ -93,7 +93,6 @@ func SignUp(ctx *fiber.Ctx) error {
 			Status: fiber.StatusInternalServerError,
 		})
 	}
-
 	createdRecord := UserCollection.FindOne(
 		ctx.Context(),
 		bson.D{{Key: "_id", Value: insertionResult.InsertedID}},

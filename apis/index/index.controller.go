@@ -8,7 +8,7 @@ import (
 )
 
 // Handle the index route
-func GetIndex(ctx *fiber.Ctx) error {
+func getIndex(ctx *fiber.Ctx) error {
 	return utilities.Response(utilities.ResponseParams{
 		Ctx:    ctx,
 		Info:   configuration.ResponseMessages.Ok,
