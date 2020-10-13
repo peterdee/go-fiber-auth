@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"os"
+	"strconv"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -129,10 +131,27 @@ func signUp(ctx *fiber.Ctx) error {
 		})
 	}
 
+	accessExpiration, expirationError := strconv.Atoi(os.Getenv("TOKENS_ACCESS_EXPIRATION"))
+	if expirationError != nil {
+		accessExpiration = 24
+	}
+	token, tokenError := utilities.GenerateJWT(utilities.GenerateJWTParams{
+		ExpiresIn: int64(accessExpiration),
+		UserId:    createdUser.ID,
+	})
+	if tokenError != nil {
+		return utilities.Response(utilities.ResponseParams{
+			Ctx:    ctx,
+			Info:   configuration.ResponseMessages.InternalServerError,
+			Status: fiber.StatusInternalServerError,
+		})
+	}
+
 	return utilities.Response(utilities.ResponseParams{
 		Ctx: ctx,
 		Data: fiber.Map{
-			"user": createdUser,
+			"token": token,
+			"user":  createdUser,
 		},
 	})
 }

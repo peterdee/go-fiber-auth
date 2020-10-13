@@ -8,3 +8,8 @@ type ResponseParams struct {
 	Info   string
 	Status int
 }
+
+type GenerateJWTParams struct {
+	ExpiresIn int64
+	UserId    string
+}
