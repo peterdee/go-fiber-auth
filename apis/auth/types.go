@@ -1,8 +1,12 @@
 package auth
 
-type CreateUserRequest struct {
+type SignInUserRequest struct {
 	Email    string `json:"email"`
-	Name     string `json:"name"`
 	Password string `json:"password"`
-	Role     string `json:"role"`
+}
+
+type SignUpUserRequest struct {
+	Name string `json:"name"`
+	Role string `json:"role"`
+	SignInUserRequest
 }

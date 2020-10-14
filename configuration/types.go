@@ -1,6 +1,7 @@
 package configuration
 
 type ResponseMessagesStruct struct {
+	AccessDenied        string
 	EmailAlreadyInUse   string
 	InternalServerError string
 	InvalidData         string

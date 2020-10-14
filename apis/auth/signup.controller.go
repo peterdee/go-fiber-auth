@@ -17,7 +17,7 @@ import (
 // Handle signing up
 func signUp(ctx *fiber.Ctx) error {
 	// check data
-	var body CreateUserRequest
+	var body SignUpUserRequest
 	bodyParsingError := ctx.BodyParser(&body)
 	if bodyParsingError != nil {
 		return utilities.Response(utilities.ResponseParams{
