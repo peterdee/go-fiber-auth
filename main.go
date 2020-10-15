@@ -16,6 +16,7 @@ import (
 
 	"go-fiber-auth/apis/auth"
 	"go-fiber-auth/apis/index"
+	"go-fiber-auth/apis/user"
 	"go-fiber-auth/configuration"
 	"go-fiber-auth/database"
 	"go-fiber-auth/utilities"
@@ -62,8 +63,9 @@ func main() {
 	app.Use(logger.New())
 
 	// available APIs
-	index.Setup(app)
 	auth.Setup(app)
+	index.Setup(app)
+	user.Setup(app)
 
 	// handle 404
 	app.Use(func(ctx *fiber.Ctx) error {

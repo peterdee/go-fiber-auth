@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"fmt"
 	"os"
 	"strconv"
 	"strings"
@@ -57,7 +56,6 @@ func signIn(ctx *fiber.Ctx) error {
 	userRecord := &User{}
 	rawUserRecord.Decode(userRecord)
 	if userRecord.ID == "" {
-		fmt.Println("right here")
 		return utilities.Response(utilities.ResponseParams{
 			Ctx:    ctx,
 			Info:   configuration.ResponseMessages.AccessDenied,
@@ -76,7 +74,6 @@ func signIn(ctx *fiber.Ctx) error {
 	passwordRecord := &Password{}
 	rawPasswordRecord.Decode(passwordRecord)
 	if passwordRecord.ID == "" {
-		fmt.Println("right here 2")
 		return utilities.Response(utilities.ResponseParams{
 			Ctx:    ctx,
 			Info:   configuration.ResponseMessages.AccessDenied,

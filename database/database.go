@@ -17,7 +17,7 @@ func Connect() error {
 	DatabaseName := os.Getenv("DATABASE_NAME")
 	client, err := mongo.NewClient(options.Client().ApplyURI(DatabaseConnection))
 
-	ctx, cancel := context.WithTimeout(context.Background(), 30 * time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	err = client.Connect(ctx)
