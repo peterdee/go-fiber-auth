@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"fmt"
+	"strings"
 
 	"github.com/gofiber/fiber/v2"
 
@@ -12,13 +12,34 @@ import (
 // Authorize requests
 func Authorize(ctx *fiber.Ctx) error {
 	// get authorization header
-	token := ctx.Get("Authorization")
-	fmt.Println("auth", token)
-	ctx.Locals("userId", token)
+	rawToken := ctx.Get("Authorization")
+	if rawToken == "" {
+		return utilities.Response(utilities.ResponseParams{
+			Ctx:    ctx,
+			Info:   configuration.ResponseMessages.MissingToken,
+			Status: fiber.StatusUnauthorized,
+		})
+	}
+	trimmedToken := strings.TrimSpace(rawToken)
+	if trimmedToken == "" {
+		return utilities.Response(utilities.ResponseParams{
+			Ctx:    ctx,
+			Info:   configuration.ResponseMessages.MissingToken,
+			Status: fiber.StatusUnauthorized,
+		})
+	}
 
-	return utilities.Response(utilities.ResponseParams{
-		Ctx:    ctx,
-		Info:   configuration.ResponseMessages.Ok,
-		Status: fiber.StatusOK,
-	})
+	// parse JWT
+	claims, parsingError := utilities.ParseClaims(trimmedToken)
+	if parsingError != nil {
+		return utilities.Response(utilities.ResponseParams{
+			Ctx:    ctx,
+			Info:   configuration.ResponseMessages.AccessDenied,
+			Status: fiber.StatusUnauthorized,
+		})
+	}
+
+	// store User ID in Locals so that it can be accessed later and proceed
+	ctx.Locals("UserId", claims.UserId)
+	return ctx.Next()
 }

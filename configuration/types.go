@@ -5,7 +5,9 @@ type ResponseMessagesStruct struct {
 	EmailAlreadyInUse   string
 	InternalServerError string
 	InvalidData         string
+	InvalidToken        string
 	MissingData         string
+	MissingToken        string
 	NotFound            string
 	Ok                  string
 	TooManyRequests     string
