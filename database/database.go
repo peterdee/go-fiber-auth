@@ -15,16 +15,19 @@ var Instance MongoInstance
 func Connect() error {
 	DatabaseConnection := os.Getenv("DATABASE_CONNECTION")
 	DatabaseName := os.Getenv("DATABASE_NAME")
-	client, err := mongo.NewClient(options.Client().ApplyURI(DatabaseConnection))
+	client, clientError := mongo.NewClient(options.Client().ApplyURI(DatabaseConnection))
+	if clientError != nil {
+		return clientError
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
-	err = client.Connect(ctx)
+	connectionError := client.Connect(ctx)
 	db := client.Database(DatabaseName)
 
-	if err != nil {
-		return err
+	if connectionError != nil {
+		return connectionError
 	}
 
 	Instance = MongoInstance{
