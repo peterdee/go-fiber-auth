@@ -2,7 +2,7 @@
 
 Authentication & authorization with Golang
 
-Stack: [Fiber](https://gofiber.io/), [Golang](https://golang.org/), [MongoDB](https://www.mongodb.com/)
+Stack: [Fiber](https://gofiber.io/), [Golang](https://golang.org/), [MongoDB](https://www.mongodb.com/), [JWT](https://github.com/dgrijalva/jwt-go)
 
 DEV: http://localhost:9119
 
