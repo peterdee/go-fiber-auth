@@ -26,6 +26,16 @@ func updateAvatar(ctx *fiber.Ctx) error {
 		})
 	}
 
+	// get avatar image
+	file, fileError := ctx.FormFile("avatar")
+	if fileError != nil {
+		return utilities.Response(utilities.ResponseParams{
+			Ctx:    ctx,
+			Info:   configuration.ResponseMessages.InternalServerError,
+			Status: fiber.StatusInternalServerError,
+		})
+	}
+
 	// find user record
 	rawUserRecord := Instance.Database.Collection("User").FindOne(
 		ctx.Context(),
