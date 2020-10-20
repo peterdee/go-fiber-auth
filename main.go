@@ -44,7 +44,10 @@ func main() {
 
 	// middlewares
 	app.Use(compress.New())
-	app.Use(cors.New())
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "*",
+		AllowHeaders: "*",
+	}))
 	app.Use(favicon.New(favicon.Config{
 		File: "./assets/favicon.ico",
 	}))
