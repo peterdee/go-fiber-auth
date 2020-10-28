@@ -6,5 +6,7 @@ type User struct {
 	Email      string `json:"email"`
 	Name       string `json:"name"`
 	Role       string `json:"role"`
-	CommonFields
+	Created    int64  `json:"created"`
+	ID         string `json:"id,omitempty" bson:"_id,omitempty"`
+	Updated    int64  `json:"updated"`
 }

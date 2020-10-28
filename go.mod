@@ -7,6 +7,7 @@ require (
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/gofiber/fiber v1.14.6
 	github.com/gofiber/fiber/v2 v2.0.6
+	github.com/gofiber/helmet v0.1.2
 	github.com/gofiber/helmet/v2 v2.0.0
 	github.com/joho/godotenv v1.3.0
 	github.com/klauspost/compress v1.11.1 // indirect

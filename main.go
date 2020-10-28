@@ -43,8 +43,8 @@ func main() {
 	app := fiber.New()
 
 	// middlewares
-	app.Use(compress.New())
 	app.Use(cors.New())
+	app.Use(compress.New())
 	app.Use(favicon.New(favicon.Config{
 		File: "./assets/favicon.ico",
 	}))
