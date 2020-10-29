@@ -1,3 +1,7 @@
+# Directories
+static/
 tmp/
+
+# Files
 .env
 run.sh
