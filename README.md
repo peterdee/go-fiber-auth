@@ -24,4 +24,4 @@ The `.env` file is required, see the [.env.example](.env.example) for details
 go run ./
 ```
 
-Can be launched with [AIR](https://github.com/cosmtrek/air)
+Can be launched with [AIR](https://github.com/cosmtrek/air) 
