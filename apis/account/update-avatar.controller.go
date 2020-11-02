@@ -36,7 +36,7 @@ func updateAvatar(ctx *fiber.Ctx) error {
 		})
 	}
 
-	// Save file to root directory:
+	// save file to root directory
 	ctx.SaveFile(file, fmt.Sprintf("./%s", "static/"+file.Filename))
 
 	// find user record
